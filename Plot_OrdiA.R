@@ -1,4 +1,4 @@
-plot_Multivariate<-function(multivA,TB,xlim=c(-1,1),ylim=c(-1,1),pch=19,bg="white",ellipse.groups=NULL, points=TRUE,sites.labs=FALSE,ell.cols="grey50",ell.radius=1,ell.center.pch=19,plot=TRUE,
+plot_OrdiA<-function(multivA,TB,xlim=c(-1,1),ylim=c(-1,1),pch=19,bg="white",ellipse.groups=NULL, points=TRUE,sites.labs=FALSE,ell.cols="grey50",ell.radius=1,ell.center.pch=19,plot=TRUE,
                             xlab="",ylab="",axes=TRUE,x.ticks=seq(xlim[1],xlim[2],1),y.ticks=seq(ylim[1],ylim[2],1), ...){
   # multivA : object class "prcomp" or "metaMDS", usually produced by prcomp or metaMDS funcitons from stats and Vegan packages, respectively.
   # TB: matrix or data.frame with the data used to produce the ordination analysis (PCA or NMDS) 
