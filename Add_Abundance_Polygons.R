@@ -1,6 +1,4 @@
-add_Abundance_Polygons<-function(M,multivA,xlim=par("usr")[1:2],ylim=par("usr")[3:4],PerRange=c(0,0.1,1,2,5,10,15,20),PerCex=seq(0.02,0.1,length.out=length(PerRange)),
-                                 xcorr=rep(0,length.out=ncol(M)),ycorr=rep(0,length.out=ncol(M)),labels=NULL,forced_labels=NA,MinLabPer=1.5,expansion=NULL,
-                                 col=rgb(t(col2rgb("grey60")),alpha=100,maxColorValue=255),col.labs="grey55", ... ){
+add_Abundance_Polygons<-function(M,multivA,xlim=par("usr")[1:2],ylim=par("usr")[3:4],PerRange=c(0,0.1,1,2,5,10,15,20),PerCex=seq(0.02,0.1,length.out=length(PerRange)),xcorr=rep(0,length.out=ncol(M)),ycorr=rep(0,length.out=ncol(M)),labels=NULL,forced_labels=NA,MinLabPer=1.5,legend=FALSE,LegLabs=NULL,legtitle=NULL,expansion=NULL,col=rgb(t(col2rgb("grey60")),alpha=100,maxColorValue=255),col.labs="grey55", ... ){
   # Analysing the individuals/cases/species data
   if(grepl("prcomp",paste(class(multivA),collapse=" "))==TRUE){
     SpeciesVars<-multivA$rotation[,1:2]      
@@ -57,11 +55,55 @@ add_Abundance_Polygons<-function(M,multivA,xlim=par("usr")[1:2],ylim=par("usr")[
           adj<-c(1,0.5)
           label.x.adj[s]<-label.x.adj[s]*(-1)
         }
-        shadowtext(SpeciesVars[s,1]+label.x.adj[s]+xcorr[s],SpeciesVars[s,2]+ycorr[s],labels=labels[s],cex=1,font=2,xpd=TRUE,adj=adj,bg="white",
+        shadowtext(SpeciesVars[s,1]+label.x.adj[s]+xcorr[s],SpeciesVars[s,2]+ycorr[s],labels=labels[s],xpd=TRUE,adj=adj,bg="white",
                    col=ifelse(length(col.labs)>1,col.labs[s],col.labs),...)
       }
     }  
   }
-  return(c(xfactor,yfactor))
+
   
-}  
+    ### Legend
+      if(legend==TRUE){
+        xli<-xlim[1]
+        # Constant separation between legend squares
+        sep<-(xlim[2]-xlim[1])*0.03
+        # Variable separation between legend squares according specific width
+        xlw<-(PerCex*xfactor)*2
+        maxYlen<-(max(PerCex)*yfactor)
+        yl<-(ylim[2]+maxYlen)+((ylim[2]+maxYlen)*0.2)
+        yt<-yl+yl*0.01
+        ylw<-((yl-ylim[2])/length(PerCex))/2
+        if(!is.null(LegLabs)){
+          Llabs<-LegLabs
+        }else{
+          L<-as.character(PerRange)
+          Llabs<-vector("expression")
+          for(l in 1:length(L)){
+            lab<-L[l]
+            if(l==1){
+              Llabs[l]<-as.expression(bquote(paste(bold("<"),bold(.(L[l+1])))))
+            }else{
+              if(l==length(L)){
+                Llabs[l]<-as.expression(bquote(paste(bold(">"),bold(.(lab)))))                
+              }else{
+                 Llabs[l]<-as.expression(bquote(bold(.(lab))))                   
+              }
+            }
+          }
+        }
+        # Printing the legend
+        for(p in 1:length(PerCex)){
+          x<-c(xli-(PerCex[p]*xfactor),xli+(PerCex[p]*xfactor),xli+(PerCex[p]*xfactor),xli-(PerCex[p]*xfactor))
+          y<-c(yl-(PerCex[p]*yfactor)*2,yl-(PerCex[p]*yfactor)*2,yl,yl)
+          polygon(x,y,border=col,col=col,xpd=TRUE)
+          text(xli,yt,labels=Llabs[p],font=2,cex=1,xpd=TRUE,adj=c(0.5,0))
+          xli<-xli+xlw[p]+sep
+        }
+
+        if(!is.null(legtitle)){
+          text((xlim[1]-xli)/2,yt+(yt*0.06),labels=legtitle,font=2,cex=1,xpd=TRUE,adj=c(0.5,0))
+        }
+      }
+
+      return(c(xfactor,yfactor))
+  }
